@@ -1,0 +1,1 @@
+select * from tpa_portal_master;    
