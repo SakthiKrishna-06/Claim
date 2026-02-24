@@ -27,6 +27,6 @@ test('Login', async ({ page }) => {
     console.error('Error:', err);
   } finally {
     await db.end();
-  } 
+  }
 
 });
