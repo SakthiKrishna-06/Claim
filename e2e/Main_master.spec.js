@@ -17,7 +17,6 @@ test('Login', async ({ page }) => {
       console.log('Matching record found for portal name', res.rows[0].portal_name  ? res.rows[0].portal_name : 'N/A');
         await page.goto(res.rows[0].portal_url);
         await page.waitForTimeout(3000);
-
       
         if(portal_name === 'IHX') {
          await runIHXFlow(page, res);

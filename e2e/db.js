@@ -7,5 +7,4 @@ const pool = new Pool({
   database: 'claim_demo',
   port: 5432,
 });
-
 module.exports = pool;
