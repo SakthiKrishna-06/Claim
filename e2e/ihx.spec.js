@@ -5,7 +5,7 @@ export async function runIHXFlow(page, res) {
   await page.getByRole('button', { name: 'Login' }).click();
   await page.locator('#WA_NEW_ADMISSION').click();
   await page.getByTestId('payer').click();
-  await page.getByText('Galaxy').click();
+  await page.getByText('text = HDFC').click();
   await page.getByTestId('iHave').click();
   await page.waitForTimeout(5000);
 }
