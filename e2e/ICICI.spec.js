@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
 import db from './db.js';
 
+import { RefreshFlow } from './Refresh.spec.js';
+
+
 test('test', async ({ page }) => {
   // console.log('finalOTP in test:', await finalOTP());
   await page.goto('https://ilhc.icicilombard.com/');
@@ -9,14 +12,29 @@ test('test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password:' }).fill('icicilombard@123');
   await page.getByRole('button', { name: 'Login' }).click();
   await page.waitForTimeout(9000);
-    const res = await db.pool2.query(
-      "select body from email_received where body like '%web portal is%' and to_email = 'insurance@promedhospital.com' order by id desc limit 1;"
-    );
-    let finalOTP = null;  
-      const otpMatch = await res.rows[0].body.match(/(?<!\d)\d{6}(?!\d)/);
-      finalOTP = otpMatch ? otpMatch[0] : null;
+
+  // Fetch OTP from database
+    // await RefreshFlow(page);
+    // const res = await db.pool2.query(
+    //   "select body from email_received where body like '%web portal is%' and to_email = 'insurance@promedhospital.com' order by id desc limit 1;"
+    // );
+    // let finalOTP = null;  
+    //   const otpMatch = await res.rows[0].body.match(/(?<!\d)\d{6}(?!\d)/);
+    //   finalOTP = otpMatch ? otpMatch[0] : null;
     
-      console.log('finalOTP:', finalOTP);
+    //   console.log('finalOTP:', finalOTP);
+
+      // Fetch OTP from email
+      // const { fetchOtp } = require('./emailUtils');
+
+      // otp = await fetchOtp(
+      //   "imap.gmail.com",                     // mail server
+      //   "insurance@promedhospital.com",            // email
+      //   "         ",                // app password
+      //   "Your One-Time Password (OTP) for ILHC Login" // subject keyword
+      // );
+      // console.log('OTP from email:', otp);
+      
   await page.locator('#txtOTP').fill(await finalOTP);
   await page.waitForTimeout(3000);
   await page.locator('#btnVerify').click();
