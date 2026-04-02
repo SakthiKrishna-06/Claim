@@ -13,7 +13,7 @@ let Abha_ID = 'ABHA1234567890'; //Abha ID
 let Telephone_Number = '9876543210'; //Telephone Number
 let IsDeathClaim = 'no'; //Is Death Claim
 let Medical = 'yes'; //Medical / Surgical
-let PED = 'yes'; //PED / Non-PED
+let PED = 'NO'; //PED / Non-PED
 
 let PED_details = ['Accident', 'Maternity']; //PED details if PED is yes
 let Dateinput = '2025-03-27'; //PED Date
@@ -91,7 +91,6 @@ test('test', async ({ page, request }) => {
     await page.waitForTimeout(3000);
     await page.getByText(Policy_Number).click();
   }
-  //
 
   await page.getByRole('textbox', { name: 'Mobile Number*:', exact: true }).fill(Mobile_Number);
   await page.locator('#txtagepatient').fill(Age);
@@ -107,6 +106,7 @@ test('test', async ({ page, request }) => {
   if (Medical === 'no') {
     await page.locator('#Radio_Treatment_Surgical').check();
     await page.locator(Procedure === 'Multiple' ? '#Radio_Procedure_Multiple' : '#Radio_Procedure_Single').check();
+    await page.locator('#ddlDisease_Type').fill('ACL Reconstruction');
   }
   else {
     await page.locator('#Radio_Treatment_Medical').check();
@@ -124,7 +124,7 @@ test('test', async ({ page, request }) => {
   let day = String(Number(dateParts[2]));
 
 
-  console.log("year:", year, typeof (year), "month:", month, typeof (month), "day:", day, typeof (day));
+  // console.log("year:", year, typeof (year), "month:", month, typeof (month), "day:", day, typeof (day));
 
   if (PED == 'yes') {
     await page.locator('#Radio_PED_YES').check();

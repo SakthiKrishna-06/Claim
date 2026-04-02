@@ -1,6 +1,7 @@
 import db from './db.js';
 import { test, expect } from '@playwright/test';
 import { runIHXFlow } from './ihx.spec.js';
+import { runICICIFlow } from './ICICI.spec.js';
 
 test('Login', async ({ page }) => {
   try {
@@ -20,6 +21,9 @@ test('Login', async ({ page }) => {
       
         if(portal_name === 'IHX') {
          await runIHXFlow(page, res);
+        }
+        else if(portal_name === 'ICICI') {
+          await runICICIFlow(page, res);
         }
     }
   } catch (err) {
