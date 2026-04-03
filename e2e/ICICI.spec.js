@@ -3,17 +3,23 @@ import db from './db.js';
 import { APIFlow } from './apiFlow.js';
 import { text } from 'node:stream/consumers';
 test.setTimeout(240000);
-let Health_Card_Number;  //Health Card Number / UHID:
-let Policy_Number = '4016/Y/185245933/06/000'; //Policy Number:
+let Health_Card_Number = 'IL19560897105';  //Health Card Number / UHID:
+let Policy_Number; //Policy Number:
 let Member_Id;  //Member ID / Employee ID:
-let Member_Name = 'RUTHVIK KRISHNAN APPU SELVAN'; //Employee Name:
-let Mobile_Number = '9876543210'; //Mobile Number
-let Age = '23'; //Age
+let Member_Name; //Employee Name:
+let Mobile_Number = '9876543212'; //Mobile Number
+let Age = '20'; //Age
+let Doctor_Name = 'Anisha';
+let Qualifications = 'MBBS';
 let Abha_ID = 'ABHA1234567890'; //Abha ID
-let Telephone_Number = '9876543210'; //Telephone Number
+let Mobile_Number_Dr = '8978675645'; //Mobile Number
+let Telephone_Number; //Telephone Number
 let IsDeathClaim = 'no'; //Is Death Claim
-let Medical = 'yes'; //Medical / Surgical
+let Medical = 'no'; //Medical / Surgical
+let Procedure = 'Single'; //Single/Multiple procedure
+let Diagnosis_Procedure_Name = 'Closure of intestinal cutaneous fistula(10535)'; //Diagnosis/Procedure Name
 let PED = 'NO'; //PED / Non-PED
+let DOA = '2026-02-04'
 
 let PED_details = ['Accident', 'Maternity']; //PED details if PED is yes
 let Dateinput = '2025-03-27'; //PED Date
@@ -21,13 +27,23 @@ let FIR_MLC = 'no'; //FIR/MLC in case of Accident
 let Location_of_FIR = 'test'; //Location of FIR
 let FIR_MLC_Number = '123456'; //FIR/MLC Number
 
-let ID_Proof = 'yes'; //ID Proof
+let Accommodation = 'AC Single Room [Single Room Ac]';
+let Room_rent_perday = '1000';
+let Expected_Length_Of_Stay = '2';
+let Requested_Amount = '3000';
+let Total_consultation = '1231';
+let Consumables = '1231';
+let Pharmacy = '12134';
+let Investigations = '2343';
+
+
+let ID_Proof = 'no'; //ID Proof
 let PreAuth = 'yes'; //PreAuth
 let Reports = 'yes'; //Reports
 
 let Relevant_Clinical_Findings = 'test'; //Relevant Clinical Findings
 let Presenting_complaints = 'test'; //Presenting complaints with duration
-let Procedure = 'Multiple'; //Single/Multiple procedure
+
 
 test('test', async ({ page, request }) => {
   // console.log('finalOTP in test:', await finalOTP());
@@ -95,18 +111,21 @@ test('test', async ({ page, request }) => {
   await page.getByRole('textbox', { name: 'Mobile Number*:', exact: true }).fill(Mobile_Number);
   await page.locator('#txtagepatient').fill(Age);
   await page.getByRole(Abha_ID != null ? 'textbox' : 'paragraph', { name: 'Abha ID:' }).fill(Abha_ID);
-  await page.getByRole(Telephone_Number != null ? 'textbox' : 'paragraph', { name: 'Telephone Number:' }).fill(Telephone_Number);
+  Telephone_Number != null && await page.getByRole('textbox', { name: 'Telephone Number:' }).fill(Telephone_Number);
+  // await page.getByRole(Telephone_Number != null ? 'textbox' : 'paragraph', { name: 'Telephone Number:' }).fill(Telephone_Number);
   await page.locator('#txtPatient_IP_no').fill('23456');
-  await page.getByRole('textbox', { name: 'Age of Patient*: Treating Dr\'' }).fill('doctor');
-  await page.getByRole('textbox', { name: 'Qualifications*: Procedure*:' }).fill('MBBS');
-  await page.getByRole('textbox', { name: 'Mobile Number*: Is this a' }).fill('6543212345');
+  await page.getByRole('textbox', { name: 'Age of Patient*: Treating Dr\'' }).fill(Doctor_Name);
+  await page.getByRole('textbox', { name: 'Qualifications*: Procedure*:' }).fill(Qualifications);
+  await page.getByRole('textbox', { name: 'Mobile Number*: Is this a' }).fill(Mobile_Number_Dr);
 
   IsDeathClaim === 'yes' && await page.locator('#Radio_DeathClaim_YES').check();
   // await page.locator(Medical === 'yes' ? '#Radio_Treatment_Medical' : '#Radio_Treatment_Surgical').check();
   if (Medical === 'no') {
     await page.locator('#Radio_Treatment_Surgical').check();
     await page.locator(Procedure === 'Multiple' ? '#Radio_Procedure_Multiple' : '#Radio_Procedure_Single').check();
-    await page.locator('#ddlDisease_Type').fill('ACL Reconstruction');
+    await page.waitForTimeout(3000);
+    await page.locator('#ddlDisease_Type').selectOption('Other Procedures');
+    await page.locator('#ddlother_procedure_Type').fill(Diagnosis_Procedure_Name);
   }
   else {
     await page.locator('#Radio_Treatment_Medical').check();
@@ -116,13 +135,10 @@ test('test', async ({ page, request }) => {
   await page.getByRole(Presenting_complaints != null ? 'textbox' : 'paragraph', { name: 'Presenting complaints with duration' }).fill(Presenting_complaints);
   await page.getByRole(Relevant_Clinical_Findings != null ? 'textbox' : 'paragraph', { name: 'Relevant Clinical Findings' }).fill(Relevant_Clinical_Findings);
 
-
-
   let dateParts = Dateinput.split('-');
   let year = dateParts[0];
   let month = String(Number(dateParts[1]));
   let day = String(Number(dateParts[2]));
-
 
   // console.log("year:", year, typeof (year), "month:", month, typeof (month), "day:", day, typeof (day));
 
@@ -179,7 +195,7 @@ test('test', async ({ page, request }) => {
         //Menstrual History
         await page.getByRole('textbox', { name: 'Menstrual History' }).fill('tert');
       }
-    
+
       else if (detail == 'Accident') {
         await page.locator('#phAccident').check();
         await page.getByRole('paragraph').filter({ hasText: 'Accident Date' }).click();
@@ -194,11 +210,11 @@ test('test', async ({ page, request }) => {
         await page.locator('#Radio_AlPED_NO').check();
 
         // FIR/MLC
-        if(FIR_MLC == 'yes'){
+        if (FIR_MLC == 'yes') {
           await page.locator('#firmlc').check();
           await page.locator('#locationFir').fill(Location_of_FIR);
           await page.locator('#firmlcNumber').fill(FIR_MLC_Number);
-         
+
 
         }
       }
@@ -207,24 +223,35 @@ test('test', async ({ page, request }) => {
   else {
     await page.locator('#Radio_PED_NO').check();
   }
+  let dateparts_2 = DOA.split('-');
+  let year_2 = dateparts_2[0];
+  let month_2 = String(Number(dateparts_2[1]));
+  let days = String(Number(dateparts_2[2]));
+
   await page.locator('#divExpectedDOA > p > .ui-datepicker-trigger').click();
-  await page.getByRole('link', { name: '3', exact: true }).click();
+  await page.getByRole('link', { name: year_2, exact: true }).click();
+
   await page.locator('#divExpectedDOA > p > .ui-datepicker-trigger').click();
-  await page.getByRole('link', { name: '19' }).click();
-  await page.getByLabel('Class of Accommodation*:').selectOption('701860');
-  await page.locator('#bill_Room_rent_perday').fill('1000');
-  await page.getByRole('textbox', { name: 'Expected Length Of Stay*:' }).fill('55');
+  await page.getByRole('link', { name: month_2, exact: true }).click();
+
+  await page.locator('#divExpectedDOA > p > .ui-datepicker-trigger').click();
+  await page.getByRole(`link`, { name: days, exact: true }).click();
+
+  await page.getByLabel('Class of Accommodation*:').selectText(Accommodation);
+  await page.locator('#bill_Room_rent_perday').fill(Room_rent_perday);
+  await page.getByRole('textbox', { name: 'Expected Length Of Stay*:' }).fill(Expected_Length_Of_Stay);
+  await page.locator('#requestedAmount').fill(Requested_Amount);
   if (Medical === 'yes') {
-    await page.locator('#txtTotal_consultation').fill('1231');
-    await page.locator('#txt_consumables').fill('1231');
-    await page.locator('#txt_Pharmacy').fill('12134');
-    await page.locator('#txt_Investigations').fill('2343');
+    await page.locator('#txtTotal_consultation').fill(Total_consultation);
+    await page.locator('#txt_consumables').fill(Consumables);
+    await page.locator('#txt_Pharmacy').fill(Pharmacy);
+    await page.locator('#txt_Investigations').fill(Investigations);
   }
   await page.getByRole('button', { name: 'Add', exact: true }).click();
   await page.locator(ID_Proof === 'yes' ? '#Radio_IDPROOF_YES' : '#Radio_IDPROOF_NO').check();
   await page.locator(PreAuth === 'yes' ? '#Radio_PREAUTH_YES' : '#Radio_PREAUTH_NO').check();
   await page.locator(Reports === 'yes' ? '#Radio_REPORTS_YES' : '#Radio_REPORTS_NO').check();
-  await page.locator('#ddlDocumentType2').selectOption('500410-1');
+  await page.locator('#ddlDocumentType2').selectOption('Prescription Papers');
   await page.getByRole('button', { name: 'Choose File' }).click();
-  await page.getByRole('textbox', { name: 'Comments*:' }).fill('TEST');
+  await page.getByRole('textbox', { name: 'Comments*:' }).fill('Pre Auth Request');
 });
