@@ -228,7 +228,7 @@ test('test', async ({ page, request }) => {
   let month_2 = String(Number(dateparts_2[1]));
   let days = String(Number(dateparts_2[2]));
 
-  await page.locator('#divExpectedDOA > p > .ui-datepicker-trigger').click();
+  await page.locator('#divExpectedDOA > p > .ui-datepicker-year').click();
   await page.getByRole('link', { name: year_2, exact: true }).click();
 
   await page.locator('#divExpectedDOA > p > .ui-datepicker-trigger').click();

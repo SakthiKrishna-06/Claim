@@ -1,5 +1,5 @@
-const { Pool } = require('pg');
-
+import pkg from 'pg';
+const { Pool } = pkg;
 const pool = new Pool({
   host: 'database-1.cdupbk1btgjg.ap-south-1.rds.amazonaws.com',
   user: 'claim_user',
