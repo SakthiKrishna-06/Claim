@@ -22,14 +22,15 @@ test('Login', async ({ page }) => {
         if(portal_name === 'IHX') {
          await runIHXFlow(page, res);
         }
-        else if(portal_name === 'ICICI') {
+        else if(portal_name === 'ICICI_OTP') {
           await runICICIFlow(page, res);
         }
     }
   } catch (err) {
     console.error('Error:', err);
   } finally {
-    await db.end();
+    await db.pool.end();
+    await db.pool2.end();
   }
 
 });

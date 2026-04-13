@@ -1,7 +1,7 @@
 import { test, request } from '@playwright/test';
 import db from './db.js';
 import { APIFlow } from './apiFlow.js';
-import { text } from 'node:stream/consumers';
+
 test.setTimeout(240000);
 let Health_Card_Number = 'IL19560897105';  //Health Card Number / UHID:
 let Policy_Number; //Policy Number:
@@ -9,8 +9,8 @@ let Member_Id;  //Member ID / Employee ID:
 let Member_Name; //Employee Name:
 let Mobile_Number = '9876543212'; //Mobile Number
 let Age = '20'; //Age
-let Doctor_Name = 'Anisha';
-let Qualifications = 'MBBS';
+let Doctor_Name = 'Anisha'; //Treating Dr's Name
+let Qualifications = 'MBBS'; //Qualifications
 let Abha_ID = 'ABHA1234567890'; //Abha ID
 let Mobile_Number_Dr = '8978675645'; //Mobile Number
 let Telephone_Number; //Telephone Number
@@ -44,8 +44,18 @@ let Reports = 'yes'; //Reports
 let Relevant_Clinical_Findings = 'test'; //Relevant Clinical Findings
 let Presenting_complaints = 'test'; //Presenting complaints with duration
 
-
 test('test', async ({ page, request }) => {
+  let pdfUrl = 'https://claim.blr1.digitaloceanspaces.com/live/cashless_claim/20260306140942_1772786382_DHANDAPANI-CLAIM.pdf';
+  let parts = pdfUrl.split('/');
+let fileName = parts.pop(); // get last part
+
+let cleanName = fileName.split('_').slice(2).join('_');
+
+let baseUrl = parts.join('/') + '/' + cleanName;
+
+  let response = await request.get(pdfUrl);
+  let buffer = await response.body();
+
   // console.log('finalOTP in test:', await finalOTP());
   await page.goto('https://ilhc.icicilombard.com/');
 
@@ -228,8 +238,10 @@ test('test', async ({ page, request }) => {
   let month_2 = String(Number(dateparts_2[1]));
   let days = String(Number(dateparts_2[2]));
 
-  await page.locator('#divExpectedDOA > p > .ui-datepicker-year').click();
-  await page.getByRole('link', { name: year_2, exact: true }).click();
+  await page.locator('#divExpectedDOA > p > .ui-datepicker-trigger').click();
+
+  await page.locator('.ui-datepicker-year').selectOption(year_2);
+  // await page.getByRole('link', { name: year_2, exact: true }).click();
 
   await page.locator('#divExpectedDOA > p > .ui-datepicker-trigger').click();
   await page.getByRole('link', { name: month_2, exact: true }).click();
@@ -241,17 +253,25 @@ test('test', async ({ page, request }) => {
   await page.locator('#bill_Room_rent_perday').fill(Room_rent_perday);
   await page.getByRole('textbox', { name: 'Expected Length Of Stay*:' }).fill(Expected_Length_Of_Stay);
   await page.locator('#requestedAmount').fill(Requested_Amount);
-  if (Medical === 'yes') {
+  if (Medical == 'yes') {
     await page.locator('#txtTotal_consultation').fill(Total_consultation);
     await page.locator('#txt_consumables').fill(Consumables);
     await page.locator('#txt_Pharmacy').fill(Pharmacy);
     await page.locator('#txt_Investigations').fill(Investigations);
   }
   await page.getByRole('button', { name: 'Add', exact: true }).click();
-  await page.locator(ID_Proof === 'yes' ? '#Radio_IDPROOF_YES' : '#Radio_IDPROOF_NO').check();
-  await page.locator(PreAuth === 'yes' ? '#Radio_PREAUTH_YES' : '#Radio_PREAUTH_NO').check();
-  await page.locator(Reports === 'yes' ? '#Radio_REPORTS_YES' : '#Radio_REPORTS_NO').check();
+  await page.locator(ID_Proof == 'yes' ? '#Radio_IDPROOF_YES' : '#Radio_IDPROOF_NO').check();
+  await page.locator(PreAuth == 'yes' ? '#Radio_PREAUTH_YES' : '#Radio_PREAUTH_NO').check();
+  await page.locator(Reports == 'yes' ? '#Radio_REPORTS_YES' : '#Radio_REPORTS_NO').check();
   await page.locator('#ddlDocumentType2').selectOption('Prescription Papers');
-  await page.getByRole('button', { name: 'Choose File' }).click();
+
+   await page.setInputFiles('input[type="file"]', {
+    name: cleanName,
+    mimeType: 'application/pdf',
+    buffer: buffer
+  });
+await page.waitForTimeout(50000);
+  
   await page.getByRole('textbox', { name: 'Comments*:' }).fill('Pre Auth Request');
+ 
 });
