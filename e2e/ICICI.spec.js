@@ -3,12 +3,14 @@ import db from './db.js';
 import { APIFlow } from './apiFlow.js';
 
 test.setTimeout(240000);
+
+
 let Health_Card_Number = 'IL19560897105';  //Health Card Number / UHID:
 let Policy_Number; //Policy Number:
 let Member_Id;  //Member ID / Employee ID:
 let Member_Name; //Employee Name:
-let Mobile_Number = '9876543212'; //Mobile Number
-let Age = '20'; //Age
+let Mobile_Number; //Mobile Number
+let Age = '20'; //Age of Patient
 let Doctor_Name = 'Anisha'; //Treating Dr's Name
 let Qualifications = 'MBBS'; //Qualifications
 let Abha_ID = 'ABHA1234567890'; //Abha ID
@@ -48,6 +50,21 @@ test('test', async ({ page, request }) => {
   let pdfUrl = 'https://claim.blr1.digitaloceanspaces.com/live/cashless_claim/20260306140942_1772786382_DHANDAPANI-CLAIM.pdf';
   let parts = pdfUrl.split('/');
 let fileName = parts.pop(); // get last part
+  // Fetch claim details
+//   const claimRes = await db.pool.query(`
+// select payers_master.payer_name_in_short, *
+// from claim_details
+// left join payers_master 
+//   on claim_details.payers_name = payers_master.id
+//   and lower(payers_master.payer_name_in_short) like '%ici%'
+// where claim_details.id = 53333;`);
+//   // Mobile_Number = claimRes.rows[0].mobile_number;
+//   if (claimRes.rows.length > 0) {
+//     const claimData = claimRes.rows[0];
+//   console.log('Fetched claimRes', claimRes.rows[0]);
+// } else {
+//   console.log('No data found for given query');
+// }
 
 let cleanName = fileName.split('_').slice(2).join('_');
 
@@ -79,6 +96,7 @@ let baseUrl = parts.join('/') + '/' + cleanName;
 
   console.log('finalOTP:', finalOTP);
 
+
   // Fetch OTP from email
   // const { fetchOtp } = require('./emailUtils');
 
@@ -98,7 +116,7 @@ let baseUrl = parts.join('/') + '/' + cleanName;
   // Input patient details
 
   if ((Health_Card_Number) != null) {
-    await page.getByRole('textbox', { name: 'Health Card Number / UHID:' }).fill(Health_Card_Number);
+    await page.getByRole('textbox', { name: 'Health Card Number / UHID:' }).fill(claimData.lr_no);
     await page.getByRole('button', { name: 'Search' }).click();
     await page.getByRole('cell', { name: Health_Card_Number }).click();
   }
