@@ -3,54 +3,30 @@ import db from './db.js';
 import { APIFlow } from './apiFlow.js';
 
 test.setTimeout(240000);
-
-
-test('test', async ({ page, request }) => {
-  let pdfUrl = 'https://claim.blr1.digitaloceanspaces.com/live/cashless_claim/20260306140942_1772786382_DHANDAPANI-CLAIM.pdf';
-  let parts = pdfUrl.split('/');
-let fileName = parts.pop(); // get last part
-  // Fetch claim details
-  const claimRes = await db.pool.query(`
-select payers_master.payer_name_in_short, *
-from claim_details
-left join payers_master 
-  on claim_details.payers_name = payers_master.id
-  and lower(payers_master.payer_name_in_short) like '%ici%'
-where claim_details.id = 53333;`);
-  // Mobile_Number = claimRes.rows[0].mobile_number;
-
-    let claimData; // ✅ declare in outer scope
-
-if (claimRes.rows.length > 0) {
-  claimData = claimRes.rows[0]; // ✅ assign
-
- 
-} else {
-  console.log('No data found for given query');
-}
-
-let Health_Card_Number = claimData.lr_no;  //Health Card Number / UHID:
-let Policy_Number = claimData.policy_no; //Policy Number:
-let Member_Id = claimData.emp_id;  //Member ID / Employee ID:
-let Member_Name = claimData.employee_name; //Employee Name:
-let Mobile_Number = claimData.mobile_no; //Mobile Number
-let Age = claimData.age; //Age of Patient
-let Doctor_Name = claimData.doctor_name; //Treating Dr's Name
-let Qualifications ; //Qualifications///////////////////////////////////////////////////
-let Abha_ID = claimData.abha_id; //Abha ID
-let Mobile_Number_Dr = claimData.doctor_mobile; //Mobile Number
-let Telephone_Number = claimData.tel_no; //Telephone Number
-let IsDeathClaim = 'no'; //Is Death Claim//////////////////////////////////////////////
+let Health_Card_Number = 'IL19560897105';  //Health Card Number / UHID:
+let Policy_Number; //Policy Number:
+let Member_Id;  //Member ID / Employee ID:
+let Member_Name; //Employee Name:
+let Mobile_Number = '9876543212'; //Mobile Number
+let Age = '20'; //Age
+let Doctor_Name = 'Anisha'; //Treating Dr's Name
+let Qualifications = 'MBBS'; //Qualifications
+let Abha_ID = 'ABHA1234567890'; //Abha ID
+let Mobile_Number_Dr = '8978675645'; //Mobile Number
+let Telephone_Number; //Telephone Number
+let IsDeathClaim = 'no'; //Is Death Claim
 let Medical = 'no'; //Medical / Surgical
 let Procedure = 'Single'; //Single/Multiple procedure
 let Diagnosis_Procedure_Name = 'Closure of intestinal cutaneous fistula(10535)'; //Diagnosis/Procedure Name
 let PED = 'NO'; //PED / Non-PED
-let DOA = claimData.doa;
+let DOA = '2026-02-04'
+
 let PED_details = ['Accident', 'Maternity']; //PED details if PED is yes
 let Dateinput = '2025-03-27'; //PED Date
 let FIR_MLC = 'no'; //FIR/MLC in case of Accident
 let Location_of_FIR = 'test'; //Location of FIR
 let FIR_MLC_Number = '123456'; //FIR/MLC Number
+
 let Accommodation = 'AC Single Room [Single Room Ac]';
 let Room_rent_perday = '1000';
 let Expected_Length_Of_Stay = '2';
@@ -60,12 +36,18 @@ let Consumables = '1231';
 let Pharmacy = '12134';
 let Investigations = '2343';
 
+
 let ID_Proof = 'no'; //ID Proof
 let PreAuth = 'yes'; //PreAuth
 let Reports = 'yes'; //Reports
 
 let Relevant_Clinical_Findings = 'test'; //Relevant Clinical Findings
 let Presenting_complaints = 'test'; //Presenting complaints with duration
+
+test('test', async ({ page, request }) => {
+  let pdfUrl = 'https://claim.blr1.digitaloceanspaces.com/live/cashless_claim/20260306140942_1772786382_DHANDAPANI-CLAIM.pdf';
+  let parts = pdfUrl.split('/');
+let fileName = parts.pop(); // get last part
 
 let cleanName = fileName.split('_').slice(2).join('_');
 
@@ -80,7 +62,7 @@ let baseUrl = parts.join('/') + '/' + cleanName;
   await page.getByRole('textbox', { name: 'User Name:' }).click({ modifiers: ['ControlOrMeta'] });
   await page.getByRole('textbox', { name: 'User Name:' }).fill('ILHC1295506');
   await page.getByRole('textbox', { name: 'Password:' }).fill('icicilombard@123');
-  // await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('button', { name: 'Login' }).click();
 
 
   // Fetch OTP from database
@@ -96,7 +78,6 @@ let baseUrl = parts.join('/') + '/' + cleanName;
   finalOTP = otpMatch ? otpMatch[0] : null;
 
   console.log('finalOTP:', finalOTP);
-
 
   // Fetch OTP from email
   // const { fetchOtp } = require('./emailUtils');
